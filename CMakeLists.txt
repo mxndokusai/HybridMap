@@ -11,10 +11,6 @@ target_include_directories(hybrid_map INTERFACE
   ${PROJECT_SOURCE_DIR}/include
 )
 
-# Example.
-add_executable(examples src/examples.cpp)
-target_link_libraries(examples PRIVATE hybrid_map)
-
 # Google Test.
 find_package(GTest QUIET)
 if(NOT GTest_FOUND)

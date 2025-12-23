@@ -1,0 +1,275 @@
+# Benchmark Set 1 (Mac)
+Unable to determine clock rate from sysctl: hw.cpufrequency: No such file or directory
+This does not affect benchmark measurements, only the metadata output.
+***WARNING*** Failed to set thread affinity. Estimated CPU frequency may be incorrect.
+2025-12-23T22:14:49+08:00
+Running ./build/benches/benches1
+Run on (12 X 24 MHz CPU s)
+CPU Caches:
+  L1 Data 64 KiB
+  L1 Instruction 128 KiB
+  L2 Unified 4096 KiB (x12)
+Load Average: 1.53, 1.67, 1.85
+------------------------------------------------------------------------------------------------
+Benchmark                                      Time             CPU   Iterations UserCounters...
+------------------------------------------------------------------------------------------------
+BM_HybridMap_Insert_Sequential/1024       110254 ns       110248 ns         6380 items_per_second=9.28815M/s
+BM_HybridMap_Insert_Sequential/4096       433290 ns       433286 ns         1613 items_per_second=9.45333M/s
+BM_HybridMap_Insert_Sequential/32768     3448433 ns      3448436 ns          202 items_per_second=9.50228M/s
+BM_HybridMap_Insert_Sequential/262144   27665045 ns     27664000 ns           25 items_per_second=9.476M/s
+BM_StdMap_Insert_Sequential/1024          142568 ns       142563 ns         4923 items_per_second=7.18279M/s
+BM_StdMap_Insert_Sequential/4096          569516 ns       569456 ns         1224 items_per_second=7.19283M/s
+BM_StdMap_Insert_Sequential/32768        4572885 ns      4572359 ns          153 items_per_second=7.16654M/s
+BM_StdMap_Insert_Sequential/262144      36606754 ns     36606053 ns           19 items_per_second=7.16122M/s
+BM_HybridMap_Insert_Random/1024           100900 ns       100892 ns         6940 items_per_second=10.1494M/s
+BM_HybridMap_Insert_Random/4096           406307 ns       406288 ns         1732 items_per_second=10.0815M/s
+BM_HybridMap_Insert_Random/32768         3286973 ns      3286882 ns          211 items_per_second=9.96933M/s
+BM_HybridMap_Insert_Random/262144       26680588 ns     26679577 ns           26 items_per_second=9.82564M/s
+BM_StdMap_Insert_Random/1024              153449 ns       152505 ns         4600 items_per_second=6.71453M/s
+BM_StdMap_Insert_Random/4096              718880 ns       646094 ns          999 items_per_second=6.33963M/s
+BM_StdMap_Insert_Random/32768            5139612 ns      5137769 ns          130 items_per_second=6.37787M/s
+BM_StdMap_Insert_Random/262144          43018360 ns     42994824 ns           17 items_per_second=6.09711M/s
+BM_HybridMap_Lookup_Hit/1024                31.6 ns         31.6 ns     22370292 items_per_second=31.6525M/s
+BM_HybridMap_Lookup_Hit/4096                31.9 ns         31.9 ns     21900322 items_per_second=31.3477M/s
+BM_HybridMap_Lookup_Hit/32768               32.2 ns         32.2 ns     21691033 items_per_second=31.0792M/s
+BM_HybridMap_Lookup_Hit/262144              32.4 ns         32.4 ns     21657947 items_per_second=30.9113M/s
+BM_StdMap_Lookup_Hit/1024                   26.2 ns         26.2 ns     26672865 items_per_second=38.1354M/s
+BM_StdMap_Lookup_Hit/4096                   28.9 ns         28.9 ns     24083618 items_per_second=34.5943M/s
+BM_StdMap_Lookup_Hit/32768                  36.0 ns         36.0 ns     19424480 items_per_second=27.7658M/s
+BM_StdMap_Lookup_Hit/262144                 38.4 ns         38.4 ns     18262791 items_per_second=26.0622M/s
+BM_HybridMap_Lookup_Miss/1024               12.0 ns         12.0 ns     57846937 items_per_second=83.237M/s
+BM_HybridMap_Lookup_Miss/4096               11.9 ns         11.9 ns     58620574 items_per_second=84.003M/s
+BM_HybridMap_Lookup_Miss/32768              11.9 ns         11.9 ns     58643165 items_per_second=83.7022M/s
+BM_HybridMap_Lookup_Miss/262144             11.9 ns         11.9 ns     58999536 items_per_second=84.0109M/s
+BM_StdMap_Lookup_Miss/1024                  25.4 ns         25.4 ns     27372620 items_per_second=39.3857M/s
+BM_StdMap_Lookup_Miss/4096                  26.3 ns         26.3 ns     26614148 items_per_second=38.0105M/s
+BM_StdMap_Lookup_Miss/32768                 35.4 ns         35.4 ns     20087870 items_per_second=28.2388M/s
+BM_StdMap_Lookup_Miss/262144                38.6 ns         38.6 ns     18101186 items_per_second=25.8875M/s
+BM_HybridMap_String_Insert/1024           162722 ns       162616 ns         4271 items_per_second=6.29702M/s
+BM_HybridMap_String_Insert/4096           657754 ns       657754 ns         1071 items_per_second=6.22726M/s
+BM_HybridMap_String_Insert/32768         5317615 ns      5317321 ns          131 items_per_second=6.1625M/s
+BM_HybridMap_String_Insert/65536        10613112 ns     10610288 ns           66 items_per_second=6.17665M/s
+BM_StdMap_String_Insert/1024              209191 ns       209029 ns         3309 items_per_second=4.89883M/s
+BM_StdMap_String_Insert/4096              851250 ns       851112 ns          825 items_per_second=4.81253M/s
+BM_StdMap_String_Insert/32768            6959815 ns      6959240 ns          100 items_per_second=4.70856M/s
+BM_StdMap_String_Insert/65536           13904774 ns     13901720 ns           50 items_per_second=4.71424M/s
+BM_HybridMap_String_Lookup/1024             89.4 ns         89.3 ns      7853521 items_per_second=11.1941M/s
+BM_HybridMap_String_Lookup/4096             90.9 ns         90.9 ns      7701278 items_per_second=11.007M/s
+BM_HybridMap_String_Lookup/32768            97.3 ns         97.3 ns      7141618 items_per_second=10.2761M/s
+BM_HybridMap_String_Lookup/65536            96.7 ns         96.7 ns      7232750 items_per_second=10.3383M/s
+BM_StdMap_String_Lookup/1024                 107 ns          107 ns      6311139 items_per_second=9.31261M/s
+BM_StdMap_String_Lookup/4096                 110 ns          110 ns      6296210 items_per_second=9.05559M/s
+BM_StdMap_String_Lookup/32768                118 ns          118 ns      5956332 items_per_second=8.49411M/s
+BM_StdMap_String_Lookup/65536                120 ns          120 ns      5829593 items_per_second=8.35942M/s
+BM_HybridMap_Mixed_Ops/1024               192500 ns       192392 ns         3646
+BM_HybridMap_Mixed_Ops/4096               527906 ns       527735 ns         1323
+BM_HybridMap_Mixed_Ops/32768             3648114 ns      3646084 ns          191
+BM_HybridMap_Mixed_Ops/65536             7243382 ns      7238784 ns           97
+BM_StdMap_Mixed_Ops/1024                  234280 ns       234262 ns         2990
+BM_StdMap_Mixed_Ops/4096                  680066 ns       679513 ns         1022
+BM_StdMap_Mixed_Ops/32768                4864026 ns      4862062 ns          144
+BM_StdMap_Mixed_Ops/65536                9655179 ns      9652959 ns           73
+
+# Benchmark Set 1 (Ubuntu)
+2025-12-23T22:13:32+08:00
+Running ./build/benches/benches1
+Run on (1 X 2200 MHz CPU )
+CPU Caches:
+  L1 Data 64 KiB (x1)
+  L1 Instruction 64 KiB (x1)
+  L2 Unified 512 KiB (x1)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.19, 0.11, 0.03
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+------------------------------------------------------------------------------------------------
+Benchmark                                      Time             CPU   Iterations UserCounters...
+------------------------------------------------------------------------------------------------
+BM_HybridMap_Insert_Sequential/1024       659341 ns       646236 ns         1222 items_per_second=1.58456M/s
+BM_HybridMap_Insert_Sequential/4096      2677129 ns      2615120 ns          264 items_per_second=1.56628M/s
+BM_HybridMap_Insert_Sequential/32768    25432183 ns     24948576 ns           30 items_per_second=1.31342M/s
+BM_HybridMap_Insert_Sequential/262144  178805421 ns    175966282 ns            4 items_per_second=1.48974M/s
+BM_StdMap_Insert_Sequential/1024          428776 ns       423833 ns         1572 items_per_second=2.41605M/s
+BM_StdMap_Insert_Sequential/4096         1705483 ns      1682429 ns          406 items_per_second=2.43458M/s
+BM_StdMap_Insert_Sequential/32768       13732275 ns     13512887 ns           50 items_per_second=2.42494M/s
+BM_StdMap_Insert_Sequential/262144     107920554 ns    106513820 ns            6 items_per_second=2.46113M/s
+BM_HybridMap_Insert_Random/1024           563460 ns       556789 ns         1135 items_per_second=1.83912M/s
+BM_HybridMap_Insert_Random/4096          2494907 ns      2455843 ns          325 items_per_second=1.66786M/s
+BM_HybridMap_Insert_Random/32768        18976695 ns     18727029 ns           37 items_per_second=1.74977M/s
+BM_HybridMap_Insert_Random/262144      183307621 ns    177315347 ns            4 items_per_second=1.47841M/s
+BM_StdMap_Insert_Random/1024              441099 ns       431616 ns         1656 items_per_second=2.37248M/s
+BM_StdMap_Insert_Random/4096             1812669 ns      1782318 ns          388 items_per_second=2.29813M/s
+BM_StdMap_Insert_Random/32768           14967339 ns     14773926 ns           46 items_per_second=2.21796M/s
+BM_StdMap_Insert_Random/262144         162567268 ns    160123855 ns            4 items_per_second=1.63713M/s
+BM_HybridMap_Lookup_Hit/1024                 123 ns          121 ns      6058942 items_per_second=8.29362M/s
+BM_HybridMap_Lookup_Hit/4096                 118 ns          116 ns      5755947 items_per_second=8.65119M/s
+BM_HybridMap_Lookup_Hit/32768                116 ns          115 ns      5937045 items_per_second=8.72408M/s
+BM_HybridMap_Lookup_Hit/262144               125 ns          124 ns      6165848 items_per_second=8.09386M/s
+BM_StdMap_Lookup_Hit/1024                    102 ns          101 ns      5918726 items_per_second=9.94661M/s
+BM_StdMap_Lookup_Hit/4096                    102 ns          101 ns      7660517 items_per_second=9.88773M/s
+BM_StdMap_Lookup_Hit/32768                   113 ns          112 ns      6290042 items_per_second=8.96228M/s
+BM_StdMap_Lookup_Hit/262144                  120 ns          118 ns      6169171 items_per_second=8.46259M/s
+BM_HybridMap_Lookup_Miss/1024               32.7 ns         32.2 ns     22607539 items_per_second=31.0124M/s
+BM_HybridMap_Lookup_Miss/4096               33.9 ns         33.5 ns     21304677 items_per_second=29.8694M/s
+BM_HybridMap_Lookup_Miss/32768              33.4 ns         33.0 ns     20854278 items_per_second=30.3114M/s
+BM_HybridMap_Lookup_Miss/262144             36.3 ns         35.8 ns     20802877 items_per_second=27.9009M/s
+BM_StdMap_Lookup_Miss/1024                   146 ns          144 ns      4968468 items_per_second=6.9264M/s
+BM_StdMap_Lookup_Miss/4096                   157 ns          155 ns      4723738 items_per_second=6.4631M/s
+BM_StdMap_Lookup_Miss/32768                  153 ns          150 ns      4824983 items_per_second=6.68298M/s
+BM_StdMap_Lookup_Miss/262144                 163 ns          161 ns      4466702 items_per_second=6.19864M/s
+BM_HybridMap_String_Insert/1024           825089 ns       813863 ns          806 items_per_second=1.2582M/s
+BM_HybridMap_String_Insert/4096          3196401 ns      3159540 ns          220 items_per_second=1.29639M/s
+BM_HybridMap_String_Insert/32768        26027200 ns     25599834 ns           26 items_per_second=1.28001M/s
+BM_HybridMap_String_Insert/65536        56446865 ns     55747958 ns           13 items_per_second=1.17558M/s
+BM_StdMap_String_Insert/1024              664892 ns       658316 ns         1098 items_per_second=1.55548M/s
+BM_StdMap_String_Insert/4096             2592449 ns      2532460 ns          274 items_per_second=1.6174M/s
+BM_StdMap_String_Insert/32768           37889431 ns     23437813 ns           32 items_per_second=1.39808M/s
+BM_StdMap_String_Insert/65536           53213890 ns     52455154 ns           10 items_per_second=1.24937M/s
+BM_HybridMap_String_Lookup/1024              139 ns          137 ns      5252610 items_per_second=7.30862M/s
+BM_HybridMap_String_Lookup/4096              151 ns          149 ns      4959728 items_per_second=6.71298M/s
+BM_HybridMap_String_Lookup/32768             151 ns          149 ns      5094846 items_per_second=6.73363M/s
+BM_HybridMap_String_Lookup/65536             153 ns          151 ns      4663033 items_per_second=6.61773M/s
+BM_StdMap_String_Lookup/1024                 217 ns          213 ns      2953274 items_per_second=4.68469M/s
+BM_StdMap_String_Lookup/4096                 247 ns          243 ns      3161078 items_per_second=4.1119M/s
+BM_StdMap_String_Lookup/32768                230 ns          227 ns      2409748 items_per_second=4.39626M/s
+BM_StdMap_String_Lookup/65536                281 ns          277 ns      3032418 items_per_second=3.60815M/s
+BM_HybridMap_Mixed_Ops/1024               887026 ns       877781 ns          720
+BM_HybridMap_Mixed_Ops/4096              3046824 ns      2986050 ns          235
+BM_HybridMap_Mixed_Ops/32768            24087430 ns     23078583 ns           31
+BM_HybridMap_Mixed_Ops/65536            46248748 ns     45144321 ns           15
+BM_StdMap_Mixed_Ops/1024                  660818 ns       652594 ns         1063
+BM_StdMap_Mixed_Ops/4096                 1817613 ns      1793624 ns          373
+BM_StdMap_Mixed_Ops/32768               12878893 ns     12655899 ns           54
+BM_StdMap_Mixed_Ops/65536               27242567 ns     26905239 ns           27
+
+# Benchmark Set 2 (Mac)
+Unable to determine clock rate from sysctl: hw.cpufrequency: No such file or directory
+This does not affect benchmark measurements, only the metadata output.
+***WARNING*** Failed to set thread affinity. Estimated CPU frequency may be incorrect.
+2025-12-23T22:36:04+08:00
+Running ./build/benches/benches2
+Run on (12 X 24 MHz CPU s)
+CPU Caches:
+  L1 Data 64 KiB
+  L1 Instruction 128 KiB
+  L2 Unified 4096 KiB (x12)
+Load Average: 4.04, 3.25, 2.45
+-----------------------------------------------------------------------------------------------------------
+Benchmark                                                 Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------------------------------
+BM_HybridMap_ConstructDestruct                          274 ns          274 ns      2556088 items_per_second=3.65184M/s
+BM_StdMap_ConstructDestruct                            23.1 ns         23.0 ns     30309460 items_per_second=43.3918M/s
+BM_HybridMap_ConstructInsert1Destruct                   463 ns          463 ns      1505901 items_per_second=2.1607M/s
+BM_StdMap_ConstructInsert1Destruct                      250 ns          249 ns      2812047 items_per_second=4.00917M/s
+BM_HybridMap_InsertClearReinsertErase/1000           369998 ns       369883 ns         1897 items_per_second=10.8142M/s
+BM_HybridMap_InsertClearReinsertErase/10000         3828416 ns      3826973 ns          182 items_per_second=10.4521M/s
+BM_HybridMap_InsertClearReinsertErase/100000       40990711 ns     40971063 ns           16 items_per_second=9.76299M/s
+BM_HybridMap_InsertClearReinsertErase/1000000     507497334 ns    507346000 ns            1 items_per_second=7.88417M/s
+BM_StdMap_InsertClearReinsertErase/1000              463446 ns       463326 ns         1511 items_per_second=8.63323M/s
+BM_StdMap_InsertClearReinsertErase/10000            4669501 ns      4668831 ns          148 items_per_second=8.56745M/s
+BM_StdMap_InsertClearReinsertErase/100000          48148943 ns     48144357 ns           14 items_per_second=8.30835M/s
+BM_StdMap_InsertClearReinsertErase/1000000        716585583 ns    716503000 ns            1 items_per_second=5.58267M/s
+BM_HybridMap_InsertAccess/250000                 1772864666 ns   1772849000 ns            1 items_per_second=28.2032M/s
+BM_StdMap_InsertAccess/250000                    2890335749 ns   2889917000 ns            1 items_per_second=17.3015M/s
+BM_HybridMap_InsertEraseU64/-8070450532247928568 9537964916 ns   9535021000 ns            1 items_per_second=10.4877M/s
+BM_HybridMap_InsertEraseU64/-8070450326089497336 5.3242e+10 ns   5.3179e+10 ns            1 items_per_second=1.88044M/s
+BM_StdMap_InsertEraseU64/-8070450532247928568    1.0973e+10 ns   1.0945e+10 ns            1 items_per_second=9.13686M/s
+BM_StdMap_InsertEraseU64/-8070450326089497336    1.1356e+10 ns   1.1337e+10 ns            1 items_per_second=8.8206M/s
+BM_HybridMap_InsertEraseString/7                 1.5304e+10 ns   1.5300e+10 ns            1 items_per_second=2.61437M/s
+BM_HybridMap_InsertEraseString/8                 1.5511e+10 ns   1.5496e+10 ns            1 items_per_second=2.58127M/s
+BM_HybridMap_InsertEraseString/13                1.6865e+10 ns   1.6822e+10 ns            1 items_per_second=2.37787M/s
+BM_HybridMap_InsertEraseString/100               1.3379e+10 ns   1.3365e+10 ns            1 items_per_second=1.79571M/s
+BM_HybridMap_InsertEraseString/1000              1.9742e+10 ns   1.9607e+10 ns            1 items_per_second=612.041k/s
+BM_StdMap_InsertEraseString/7                    2.6330e+10 ns   2.6261e+10 ns            1 items_per_second=1.52315M/s
+BM_StdMap_InsertEraseString/8                    2.5146e+10 ns   2.5118e+10 ns            1 items_per_second=1.59248M/s
+BM_StdMap_InsertEraseString/13                   2.4920e+10 ns   2.4906e+10 ns            1 items_per_second=1.60601M/s
+BM_StdMap_InsertEraseString/100                  1.7890e+10 ns   1.7881e+10 ns            1 items_per_second=1.34218M/s
+BM_StdMap_InsertEraseString/1000                 1.8875e+10 ns   1.8784e+10 ns            1 items_per_second=638.834k/s
+BM_HybridMap_InsertOnly/1024                         197852 ns       197727 ns         3490 items_per_second=5.17885M/s
+BM_HybridMap_InsertOnly/4096                         784192 ns       783476 ns          904 items_per_second=5.22799M/s
+BM_HybridMap_InsertOnly/32768                       6385343 ns      6380733 ns          105 items_per_second=5.13546M/s
+BM_HybridMap_InsertOnly/262144                     60785360 ns     60321091 ns           11 items_per_second=4.34581M/s
+BM_HybridMap_InsertOnly/1048576                   288207937 ns    286643500 ns            2 items_per_second=3.65812M/s
+BM_StdMap_InsertOnly/1024                            199979 ns       199942 ns         3391 items_per_second=5.12149M/s
+BM_StdMap_InsertOnly/4096                            798985 ns       798776 ns          866 items_per_second=5.12785M/s
+BM_StdMap_InsertOnly/32768                          6946356 ns      6933362 ns          105 items_per_second=4.72613M/s
+BM_StdMap_InsertOnly/262144                        60127528 ns     60061000 ns            9 items_per_second=4.36463M/s
+BM_StdMap_InsertOnly/1048576                      440352438 ns    438222500 ns            2 items_per_second=2.39279M/s
+BM_HybridMap_EraseOnly/1024                           94829 ns        94344 ns         7431 items_per_second=10.8539M/s
+BM_HybridMap_EraseOnly/4096                          386411 ns       385530 ns         1830 items_per_second=10.6243M/s
+BM_HybridMap_EraseOnly/32768                        3162355 ns      3157364 ns          228 items_per_second=10.3783M/s
+BM_HybridMap_EraseOnly/262144                      31277250 ns     31126957 ns           23 items_per_second=8.42177M/s
+BM_HybridMap_EraseOnly/1048576                    147638858 ns    147233200 ns            5 items_per_second=7.12187M/s
+BM_StdMap_EraseOnly/1024                             135519 ns       135264 ns         5120 items_per_second=7.57038M/s
+BM_StdMap_EraseOnly/4096                             553282 ns       551750 ns         1262 items_per_second=7.42366M/s
+BM_StdMap_EraseOnly/32768                           4648195 ns      4639804 ns          148 items_per_second=7.06237M/s
+BM_StdMap_EraseOnly/262144                         48885357 ns     48800611 ns           18 items_per_second=5.37174M/s
+BM_StdMap_EraseOnly/1048576                       259795028 ns    259715333 ns            3 items_per_second=4.03741M/s
+BM_HybridMap_Find_2000_uint64/0                    89799708 ns     89737125 ns            8 items_per_second=22.2873M/s
+BM_HybridMap_Find_2000_uint64/25                   89957578 ns     89885000 ns            8 items_per_second=22.2507M/s
+BM_HybridMap_Find_2000_uint64/50                   90032573 ns     89944625 ns            8 items_per_second=22.2359M/s
+BM_HybridMap_Find_2000_uint64/75                   91443807 ns     91128500 ns            8 items_per_second=21.947M/s
+BM_HybridMap_Find_2000_uint64/100                  91757833 ns     91535625 ns            8 items_per_second=21.8494M/s
+BM_StdMap_Find_2000_uint64/0                       96955780 ns     96788143 ns            7 items_per_second=20.6637M/s
+BM_StdMap_Find_2000_uint64/25                      96028958 ns     95967000 ns            7 items_per_second=20.8405M/s
+BM_StdMap_Find_2000_uint64/50                      96250798 ns     96190286 ns            7 items_per_second=20.7921M/s
+BM_StdMap_Find_2000_uint64/75                      96334566 ns     96257571 ns            7 items_per_second=20.7776M/s
+BM_StdMap_Find_2000_uint64/100                     96405149 ns     96312000 ns            7 items_per_second=20.7658M/s
+BM_HybridMap_Find_500k_uint64/0                  2.5539e+10 ns   2.5498e+10 ns            1 items_per_second=19.6094M/s
+BM_HybridMap_Find_500k_uint64/25                 2.7109e+10 ns   2.7062e+10 ns            1 items_per_second=18.4759M/s
+BM_HybridMap_Find_500k_uint64/50                 2.6150e+10 ns   2.6120e+10 ns            1 items_per_second=19.1427M/s
+BM_HybridMap_Find_500k_uint64/75                 2.4583e+10 ns   2.4560e+10 ns            1 items_per_second=20.3585M/s
+BM_HybridMap_Find_500k_uint64/100                2.4557e+10 ns   2.4537e+10 ns            1 items_per_second=20.3773M/s
+BM_StdMap_Find_500k_uint64/0                     3.7686e+10 ns   3.7650e+10 ns            1 items_per_second=13.2801M/s
+BM_StdMap_Find_500k_uint64/25                    3.7133e+10 ns   3.6936e+10 ns            1 items_per_second=13.537M/s
+BM_StdMap_Find_500k_uint64/50                    4.9263e+10 ns   4.9142e+10 ns            1 items_per_second=10.1747M/s
+BM_StdMap_Find_500k_uint64/75                    5.8770e+10 ns   5.8640e+10 ns            1 items_per_second=8.52663M/s
+BM_StdMap_Find_500k_uint64/100                   4.2914e+10 ns   4.2844e+10 ns            1 items_per_second=11.6702M/s
+BM_HybridMap_Find_100k_string/0                  2.7546e+10 ns   2.7513e+10 ns            1 items_per_second=3.63458M/s
+BM_HybridMap_Find_100k_string/25                 2.7428e+10 ns   2.7405e+10 ns            1 items_per_second=3.64891M/s
+BM_HybridMap_Find_100k_string/50                 2.8503e+10 ns   2.8431e+10 ns            1 items_per_second=3.51733M/s
+BM_HybridMap_Find_100k_string/75                 2.8403e+10 ns   2.8337e+10 ns            1 items_per_second=3.52901M/s
+BM_HybridMap_Find_100k_string/100                2.8885e+10 ns   2.8785e+10 ns            1 items_per_second=3.47403M/s
+BM_StdMap_Find_100k_string/0                     3.3419e+10 ns   3.3353e+10 ns            1 items_per_second=2.99819M/s
+BM_StdMap_Find_100k_string/25                    3.1441e+10 ns   3.1372e+10 ns            1 items_per_second=3.18752M/s
+BM_StdMap_Find_100k_string/50                    2.8653e+10 ns   2.8638e+10 ns            1 items_per_second=3.49192M/s
+BM_StdMap_Find_100k_string/75                    2.8626e+10 ns   2.8613e+10 ns            1 items_per_second=3.49492M/s
+BM_StdMap_Find_100k_string/100                   2.9229e+10 ns   2.9194e+10 ns            1 items_per_second=3.42541M/s
+BM_HybridMap_Find_1M_string/0                    3.7863e+10 ns   3.7821e+10 ns            1 items_per_second=5.28811M/s
+BM_HybridMap_Find_1M_string/25                   3.8057e+10 ns   3.8016e+10 ns            1 items_per_second=5.2609M/s
+BM_HybridMap_Find_1M_string/50                   3.7470e+10 ns   3.7257e+10 ns            1 items_per_second=5.3681M/s
+BM_HybridMap_Find_1M_string/75                   3.7210e+10 ns   3.6930e+10 ns            1 items_per_second=5.41562M/s
+BM_HybridMap_Find_1M_string/100                  3.7374e+10 ns   3.7340e+10 ns            1 items_per_second=5.35623M/s
+BM_StdMap_Find_1M_string/0                       5.5245e+10 ns   5.5191e+10 ns            1 items_per_second=3.62376M/s
+BM_StdMap_Find_1M_string/25                      5.3998e+10 ns   5.3963e+10 ns            1 items_per_second=3.70628M/s
+BM_StdMap_Find_1M_string/50                      5.2755e+10 ns   5.2728e+10 ns            1 items_per_second=3.79307M/s
+BM_StdMap_Find_1M_string/75                      5.3016e+10 ns   5.2990e+10 ns            1 items_per_second=3.77431M/s
+BM_StdMap_Find_1M_string/100                     5.0818e+10 ns   5.0814e+10 ns            1 items_per_second=3.93591M/s
+
+# Benchmark Set 2 (Ubuntu)
+2025-12-23T22:32:35+08:00
+Running ./build/benches/benches2
+Run on (1 X 2200 MHz CPU )
+CPU Caches:
+  L1 Data 64 KiB (x1)
+  L1 Instruction 64 KiB (x1)
+  L2 Unified 512 KiB (x1)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.71, 1.15, 0.68
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+--------------------------------------------------------------------------------------------------------
+Benchmark                                              Time             CPU   Iterations UserCounters...
+--------------------------------------------------------------------------------------------------------
+BM_HybridMap_ConstructDestruct                       680 ns          672 ns      1038908 items_per_second=1.4874M/s
+BM_StdMap_ConstructDestruct                         96.0 ns         94.8 ns      7362629 items_per_second=10.5531M/s
+BM_HybridMap_ConstructInsert1Destruct               1383 ns         1357 ns       533726 items_per_second=736.941k/s
+BM_StdMap_ConstructInsert1Destruct                   591 ns          572 ns      1251239 items_per_second=1.74965M/s
+BM_HybridMap_InsertClearReinsertErase/1000       1564348 ns      1490870 ns          481 items_per_second=2.683M/s
+BM_HybridMap_InsertClearReinsertErase/10000     16066030 ns     15699912 ns           45 items_per_second=2.54778M/s
+BM_HybridMap_InsertClearReinsertErase/100000   172698061 ns    169979842 ns            4 items_per_second=2.35322M/s
+BM_HybridMap_InsertClearReinsertErase/1000000 1911542289 ns   1876374817 ns            1 items_per_second=2.13177M/s
+BM_StdMap_InsertClearReinsertErase/1000          1323512 ns      1305103 ns          539 items_per_second=3.06489M/s
+BM_StdMap_InsertClearReinsertErase/10000        11687993 ns     11507521 ns           60 items_per_second=3.47599M/s
+BM_StdMap_InsertClearReinsertErase/100000      133872414 ns    131104199 ns            5 items_per_second=3.05101M/s
+BM_StdMap_InsertClearReinsertErase/1000000    2122842349 ns   2090697730 ns            1 items_per_second=1.91324M/s
+BM_HybridMap_InsertAccess/250000              1.1647e+10 ns   1.1434e+10 ns            1 items_per_second=4.37289M/s
+BM_StdMap_InsertAccess/250000                 1.4086e+10 ns   1.3832e+10 ns            1 items_per_second=3.61492M/s

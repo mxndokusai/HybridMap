@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
-#include <new>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -11,7 +10,8 @@
 namespace yhy {
 
 template <typename Key, typename Value, typename Hash = std::hash<Key>>
-class alignas(std::hardware_destructive_interference_size) HashMap {
+// class alignas(std::hardware_destructive_interference_size) HashMap {
+class HashMap {
 private:
   struct Entry {
     std::pair<const Key, Value> data;
@@ -20,7 +20,7 @@ private:
   };
 
   // Main hash table contains precomputed hash + pointer per slot.
-  struct Slot {
+  struct alignas(16) Slot {
     size_t hash;
     Entry *entry;
     Slot() : hash(0), entry(nullptr) {}
@@ -32,17 +32,32 @@ private:
   std::vector<std::unique_ptr<Entry>> entries_;
   size_t size_;
   size_t capacity_;
+  size_t tombstone_count_;
   Hash hash_fn_;
 
   static constexpr size_t INITIAL_CAPACITY = 16;
   static constexpr double MAX_LOAD_FACTOR = 0.75;
+  static constexpr double MAX_TOMBSTONE_RATIO = 0.25;
   static constexpr size_t EMPTY_HASH = 0;
+  static constexpr size_t TOMBSTONE_HASH = 1;
+
+  // Sentinel pointer value to mark tombstones.
+  static Entry *tombstone_ptr() {
+    return reinterpret_cast<Entry *>(static_cast<uintptr_t>(1));
+  }
+
+  // Checks if slot is tombstone.
+  static bool is_tombstone(const Slot &slot) {
+    return slot.entry == tombstone_ptr();
+  }
+
+  // Check if a slot is empty.
+  static bool is_empty(const Slot &slot) { return slot.entry == nullptr; }
 
   // Find the next power of 2.
   static size_t next_power_of_2(size_t n) {
-    if (n == 0)
+    if (n-- == 0)
       return 1;
-    n--;
     n |= n >> 1;
     n |= n >> 2;
     n |= n >> 4;
@@ -52,8 +67,10 @@ private:
     return n + 1;
   }
 
-  // Ensure hash is never 0, use 0 to mark empty slots.
-  static size_t make_hash(size_t h) { return h == EMPTY_HASH ? 1 : h; }
+  // Ensure hash is never 0 or 1, 0 marks empty, 1 marks tombstone.
+  static size_t make_hash(size_t h) {
+    return (h == EMPTY_HASH || h == TOMBSTONE_HASH) ? 2 : h;
+  }
 
   // Quadratic probing for better cache performance.
   size_t probe(size_t index, size_t i) const {
@@ -65,10 +82,11 @@ private:
     table_.clear();
     table_.resize(new_capacity);
     capacity_ = new_capacity;
+    tombstone_count_ = 0;
 
-    // Reinsert all entries.
+    // Reinsert all valid entries.
     for (auto &slot : old_table)
-      if (slot.entry != nullptr)
+      if (!is_empty(slot) && !is_tombstone(slot))
         insert_internal(slot.hash, slot.entry);
   }
 
@@ -77,14 +95,16 @@ private:
     // Open addressing to find empty slot.
     for (size_t i = 0; i < capacity_; ++i) {
       size_t pos = probe(index, i);
-      if (table_[pos].entry == nullptr) {
+      if (is_empty(table_[pos]) || is_tombstone(table_[pos])) {
+        if (is_tombstone(table_[pos]))
+          --tombstone_count_;
         table_[pos].hash = hash;
         table_[pos].entry = entry;
         return;
       }
     }
     // Should never reach here if load factor is maintained.
-    throw std::runtime_error("Hash table is full");
+    throw std::runtime_error("Hash table is full.");
   }
 
   size_t find_slot(const Key &key, size_t hash) const {
@@ -92,8 +112,11 @@ private:
     for (size_t i = 0; i < capacity_; ++i) {
       size_t pos = probe(index, i);
       // Empty slot, key not found. Invalid index.
-      if (table_[pos].entry == nullptr)
+      if (is_empty(table_[pos]))
         return capacity_;
+      // Skip tombstones and continue probing.
+      if (is_tombstone(table_[pos]))
+        continue;
       // Hash match, check actual key.
       if (table_[pos].hash == hash && table_[pos].entry->data.first == key) {
         return pos;
@@ -103,14 +126,15 @@ private:
   }
 
 public:
-  HashMap() : size_(0), capacity_(INITIAL_CAPACITY), hash_fn_() {
+  HashMap()
+      : size_(0), capacity_(INITIAL_CAPACITY), tombstone_count_(0), hash_fn_() {
     table_.resize(capacity_);
   }
 
   HashMap(size_t expected_size)
       : size_(0), capacity_(next_power_of_2(
                       static_cast<size_t>(expected_size / MAX_LOAD_FACTOR))),
-        hash_fn_() {
+        tombstone_count_(0), hash_fn_() {
     table_.resize(capacity_);
   }
 
@@ -133,40 +157,58 @@ public:
     table_.resize(capacity_);
     entries_.clear();
     size_ = 0;
+    tombstone_count_ = 0;
   }
 
   // Insert or update.
   template <typename K, typename V>
   std::pair<Value *, bool> insert(K &&key, V &&value) {
     // Check if need rehashing.
-    if (static_cast<double>(size_ + 1) / capacity_ > MAX_LOAD_FACTOR)
+    double load = static_cast<double>(size_ + 1) / capacity_;
+    double ratio = static_cast<double>(tombstone_count_) / capacity_;
+    if (load > MAX_LOAD_FACTOR || ratio > MAX_TOMBSTONE_RATIO)
       rehash(capacity_ * 2);
     size_t hash = make_hash(hash_fn_(key));
     size_t index = hash & (capacity_ - 1);
-    // Check if key exists.
+    // Check if key exists or find first tombstone for reuse.
+    size_t first_tombstone = capacity_; // Track first tombstone seen.
+
     for (size_t i = 0; i < capacity_; ++i) {
       size_t pos = probe(index, i);
-      if (table_[pos].entry == nullptr) {
-        // Empty slot, so insert new entry.
+      // Empty slot, use tombstone if seen, otherwise use this.
+      if (is_empty(table_[pos])) {
+        size_t insert_pos =
+            (first_tombstone != capacity_) ? first_tombstone : pos;
+        // Reuse tombstone.
+        if (first_tombstone != capacity_)
+          --tombstone_count_;
+        // Insert new entry.
         auto entry = std::make_unique<Entry>(std::forward<K>(key),
                                              std::forward<V>(value));
         Entry *entry_ptr = entry.get();
         entries_.push_back(std::move(entry));
 
-        table_[pos].hash = hash;
-        table_[pos].entry = entry_ptr;
+        table_[insert_pos].hash = hash;
+        table_[insert_pos].entry = entry_ptr;
         ++size_;
         return {&entry_ptr->data.second, true};
       }
 
-      if (table_[pos].hash == hash && table_[pos].entry->data.first == key) {
+      // Track first tombstone.
+      if (is_tombstone(table_[pos]) && first_tombstone == capacity_) {
+        first_tombstone = pos;
+        continue;
+      }
+
+      // Check if key already exists (skip tombstones).
+      if (!is_tombstone(table_[pos]) && table_[pos].hash == hash &&
+          table_[pos].entry->data.first == key) {
         // Key exists, update value.
         table_[pos].entry->data.second = std::forward<V>(value);
         return {&table_[pos].entry->data.second, false};
       }
     }
-
-    throw std::runtime_error("Hash table is full");
+    throw std::runtime_error("Hash table is full.");
   }
 
   // Lookup.
@@ -199,18 +241,22 @@ public:
   // Check if key exists.
   bool contains(const Key &key) const { return find(key) != nullptr; }
 
-  // Erase, does not shrink table.
+  // Erase.
   bool erase(const Key &key) {
     size_t hash = make_hash(hash_fn_(key));
     size_t pos = find_slot(key, hash);
+    // Key not found.
     if (pos == capacity_)
       return false;
-
-    // Mark slot as deleted by setting entry to nullptr
-    // TODO: Use tombstones or backward shifting for better performance.
-    table_[pos].entry = nullptr;
-    table_[pos].hash = EMPTY_HASH;
+    // Mark as tombstone using sentinel pointer.
+    table_[pos].hash = TOMBSTONE_HASH;
+    table_[pos].entry = tombstone_ptr();
+    ++tombstone_count_;
     --size_;
+    // Consider rehashing if too many tombstones accumulate.
+    double tombstone_ratio = static_cast<double>(tombstone_count_) / capacity_;
+    if (tombstone_ratio > MAX_TOMBSTONE_RATIO && size_ > 0)
+      rehash(capacity_);
     return true;
   }
 };

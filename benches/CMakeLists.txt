@@ -1,16 +1,16 @@
-# add_executable(benches1
-#   benches1.cpp
-# )
-# add_executable(benches2
-#   benches2.cpp
-# )
-# target_link_libraries(benches1
-#   PRIVATE
-#   hybrid_map
-#   benchmark::benchmark_main
-# )
-# target_link_libraries(benches2
-#   PRIVATE
-#   hybrid_map
-#   benchmark::benchmark_main
-# )
+add_executable(benches1
+  benches1.cpp
+)
+add_executable(benches2
+  benches2.cpp
+)
+target_link_libraries(benches1
+  PRIVATE
+  hybrid_map
+  benchmark::benchmark_main
+)
+target_link_libraries(benches2
+  PRIVATE
+  hybrid_map
+  benchmark::benchmark_main
+)

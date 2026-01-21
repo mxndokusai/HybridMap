@@ -483,6 +483,260 @@ TEST(HybridMapTest, SequentialVsRandomInsert) {
   }
 }
 
+// Small types should use FlatHashMap.
+struct SmallKey {
+  int id;
+  bool operator==(const SmallKey &other) const { return id == other.id; }
+};
+
+struct SmallValue {
+  double data;
+};
+
+// Large types should use NodeHashMap.
+struct LargeKey {
+  char data[128];
+  bool operator==(const LargeKey &other) const {
+    return std::string(data) == std::string(other.data);
+  }
+};
+
+struct LargeValue2 {
+  char data[256];
+};
+
+namespace std {
+template <> struct hash<SmallKey> {
+  size_t operator()(const SmallKey &k) const { return std::hash<int>{}(k.id); }
+};
+template <> struct hash<LargeKey> {
+  size_t operator()(const LargeKey &k) const {
+    return std::hash<std::string>{}(std::string(k.data));
+  }
+};
+} // namespace std
+
+// Generic test fixture template.
+template <typename Map> class HashMapTest : public ::testing::Test {
+protected:
+  Map map;
+};
+
+using MapTypes =
+    ::testing::Types<NodeHashMap<int, int>, FlatHashMap<int, int>,
+                     HashMap<int, int>, HashMap<SmallKey, SmallValue>,
+                     HashMap<std::string, int>>;
+
+TYPED_TEST_SUITE(HashMapTest, MapTypes);
+
+TYPED_TEST(HashMapTest, InsertAndFind) {
+  auto &map = this->map;
+
+  // For int->int or int->string.
+  if constexpr (std::is_same_v<typename TypeParam::key_type, int> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               NodeHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    auto [ptr, inserted] = map.insert(42, 100);
+    EXPECT_TRUE(inserted);
+    EXPECT_NE(ptr, nullptr);
+
+    auto *found = map.find(42);
+    EXPECT_NE(found, nullptr);
+
+    auto *not_found = map.find(999);
+    EXPECT_EQ(not_found, nullptr);
+  }
+}
+
+TYPED_TEST(HashMapTest, UpdateExisting) {
+  auto &map = this->map;
+
+  if constexpr (std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    map.insert(1, 10);
+    auto [ptr, inserted] = map.insert(1, 20);
+    EXPECT_FALSE(inserted); // Key exists, should update.
+    EXPECT_EQ(*ptr, 20);
+
+    auto *found = map.find(1);
+    EXPECT_EQ(*found, 20);
+  }
+}
+
+TYPED_TEST(HashMapTest, EraseKey) {
+  auto &map = this->map;
+
+  if constexpr (std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    map.insert(5, 50);
+    EXPECT_TRUE(map.contains(5));
+
+    bool erased = map.erase(5);
+    EXPECT_TRUE(erased);
+    EXPECT_FALSE(map.contains(5));
+
+    bool erased_again = map.erase(5);
+    EXPECT_FALSE(erased_again);
+  }
+}
+
+TYPED_TEST(HashMapTest, Clear) {
+  auto &map = this->map;
+
+  if constexpr (std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    map.insert(1, 10);
+    map.insert(2, 20);
+    EXPECT_EQ(map.size(), 2);
+
+    map.clear();
+    EXPECT_EQ(map.size(), 0);
+    EXPECT_TRUE(map.empty());
+    EXPECT_FALSE(map.contains(1));
+  }
+}
+
+TYPED_TEST(HashMapTest, OperatorBracket) {
+  auto &map = this->map;
+
+  if constexpr (std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    map[10] = 100;
+    EXPECT_EQ(map[10], 100);
+
+    // Access non-existent key should insert default.
+    int val = map[999];
+    EXPECT_EQ(val, 0);
+    EXPECT_TRUE(map.contains(999));
+  }
+}
+
+TYPED_TEST(HashMapTest, Rehashing) {
+  auto &map = this->map;
+
+  if constexpr (std::is_same_v<std::decay_t<decltype(map)>,
+                               FlatHashMap<int, int>> ||
+                std::is_same_v<std::decay_t<decltype(map)>,
+                               HashMap<int, int>>) {
+    // Insert many elements to trigger rehashing.
+    for (int i = 0; i < 1000; ++i) {
+      map.insert(i, i * 10);
+    }
+
+    EXPECT_EQ(map.size(), 1000);
+
+    // Verify all elements are accessible.
+    for (int i = 0; i < 1000; ++i) {
+      auto *val = map.find(i);
+      ASSERT_NE(val, nullptr);
+      EXPECT_EQ(*val, i * 10);
+    }
+  }
+}
+
+template <typename Key, typename Value> struct is_flat_map_suitable {
+  static constexpr bool value =
+      // Must fit in cache line with hash (8 bytes for hash).
+      (sizeof(Key) + sizeof(Value) <= 56) &&
+      // Must be nothrow move constructible for safe rehashing.
+      std::is_nothrow_move_constructible_v<Key> &&
+      std::is_nothrow_move_constructible_v<Value>;
+};
+
+template <typename Key, typename Value>
+inline constexpr bool is_flat_map_suitable_v =
+    is_flat_map_suitable<Key, Value>::value;
+
+// Type trait tests.
+TEST(TypeTraitTest, FlatMapSuitability) {
+  // Small types should be suitable.
+  EXPECT_TRUE((is_flat_map_suitable_v<int, int>));
+  EXPECT_TRUE((is_flat_map_suitable_v<SmallKey, SmallValue>));
+
+  // Large types should not be suitable.
+  EXPECT_FALSE((is_flat_map_suitable_v<LargeKey, LargeValue2>));
+
+  // String is move-constructible but might be too large depending on SSO.
+  // This tests the size constraint.
+  EXPECT_TRUE((is_flat_map_suitable_v<int, std::string>));
+}
+
+// Test automatic type selection.
+TEST(HybridMapTest, AutomaticSelection) {
+  // Small types should resolve to FlatHashMap.
+  using SmallMap = HashMap<int, int>;
+  static_assert(std::is_same_v<SmallMap, FlatHashMap<int, int>>);
+
+  // Large types should resolve to NodeHashMap.
+  using LargeMap = HashMap<LargeKey, LargeValue2>;
+  static_assert(std::is_same_v<LargeMap, NodeHashMap<LargeKey, LargeValue2>>);
+}
+
+// Specific FlatHashMap tests.
+TEST(FlatHashMapTest, BasicOperations) {
+  FlatHashMap<int, int> map;
+
+  map.insert(1, 10);
+  map.insert(2, 20);
+  map.insert(3, 30);
+
+  EXPECT_EQ(map.size(), 3);
+  EXPECT_EQ(*map.find(2), 20);
+
+  map.erase(2);
+  EXPECT_EQ(map.size(), 2);
+  EXPECT_EQ(map.find(2), nullptr);
+}
+
+// Specific NodeHashMap tests.
+TEST(NodeHashMapTest, BasicOperations) {
+  NodeHashMap<std::string, std::string> map;
+
+  map.insert("key1", "value1");
+  map.insert("key2", "value2");
+
+  EXPECT_EQ(map.size(), 2);
+  EXPECT_EQ(*map.find("key1"), "value1");
+
+  map.erase("key1");
+  EXPECT_EQ(map.size(), 1);
+  EXPECT_EQ(map.find("key1"), nullptr);
+}
+
+// Test move semantics.
+TEST(FlatHashMapTest, MoveConstructor) {
+  FlatHashMap<int, int> map1;
+  map1.insert(1, 100);
+  map1.insert(2, 200);
+
+  FlatHashMap<int, int> map2(std::move(map1));
+  EXPECT_EQ(map2.size(), 2);
+  EXPECT_EQ(*map2.find(1), 100);
+  EXPECT_EQ(map1.size(), 0); // map1 should be empty after move.
+}
+
+TEST(NodeHashMapTest, MoveConstructor) {
+  NodeHashMap<int, int> map1;
+  map1.insert(1, 100);
+  map1.insert(2, 200);
+
+  NodeHashMap<int, int> map2(std::move(map1));
+  EXPECT_EQ(map2.size(), 2);
+  EXPECT_EQ(*map2.find(1), 100);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

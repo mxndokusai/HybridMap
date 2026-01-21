@@ -17,7 +17,11 @@ private:
   struct Entry {
     std::pair<const Key, Value> data;
     template <typename K, typename V>
-    Entry(K &&k, V &&v) : data(std::forward<K>(k), std::forward<V>(v)) {}
+    // Entry(K &&k, V &&v) : data(std::forward<K>(k), std::forward<V>(v)) {}
+    Entry(K &&k, V &&v)
+        : data(std::piecewise_construct,
+               std::forward_as_tuple(std::forward<K>(k)),
+               std::forward_as_tuple(std::forward<V>(v))) {}
   };
 
   // Main hash table contains precomputed hash + pointer per slot.
@@ -108,6 +112,9 @@ private:
   }
 
 public:
+  // Used for type trait tests.
+  using key_type = Key;
+  using mapped_type = Value;
   NodeHashMap()
       : size_(0), capacity_(INITIAL_CAPACITY), tombstone_count_(0), hash_fn_() {
     table_.resize(capacity_);

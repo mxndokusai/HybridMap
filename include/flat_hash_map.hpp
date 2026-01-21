@@ -121,6 +121,9 @@ private:
   }
 
 public:
+  // Used for type trait tests.
+  using key_type = Key;
+  using mapped_type = Value;
   FlatHashMap()
       : size_(0), capacity_(INITIAL_CAPACITY), tombstone_count_(0), hash_fn_() {
     table_.resize(capacity_);
